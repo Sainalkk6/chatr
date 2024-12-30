@@ -1,0 +1,46 @@
+"use client"
+import { FormikTouched } from "formik";
+import React, { ChangeEventHandler, SetStateAction } from "react";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+
+interface TextFieldInterface {
+  error?: string;
+  label: string;
+  name: string;
+  id: string;
+  handleChange: ChangeEventHandler<HTMLInputElement>;
+  isPassword:boolean;
+  login: boolean;
+  type:string;
+  value:string;
+  showPassword?:boolean;
+  setShowPassword?:React.Dispatch<SetStateAction<boolean>>;
+  touched:boolean;
+  handleBlur: React.FocusEventHandler<HTMLInputElement>
+}
+
+const TextField = ({ error, handleChange, id, label, name, value,touched,type,isPassword,setShowPassword,showPassword,handleBlur }: TextFieldInterface) => {
+
+  const renderFieldHeader = () => {
+    return (
+      <div className="flex w-full justify-between">
+        <span className="text-field-label capitalize">{label}</span>
+        {isPassword && setShowPassword &&  (
+          <button onClick={()=>setShowPassword(!showPassword)} className="flex items-center gap-[10px]">
+            <span className="text-field-label">{showPassword ? "Hide" : "Show"}</span>
+            {showPassword ? <AiOutlineEyeInvisible scale={20} /> : <AiOutlineEye scale={20} />}
+          </button>
+        )}
+      </div>
+    );
+  };
+
+  return <div className="flex flex-col gap-1  ">
+    {renderFieldHeader()}
+    <input type={type} onBlur={handleBlur} onChange={handleChange} name={name} id={id} className="md:h-14 h-12 rounded-xl pl-5 border border-[#66666659] outline-none" value={value} />
+    {touched && error && <p className="text-red-500 text-sm">{error}</p>}
+    {/* {isPassword && <p className="text-field-label ">Use 8 or more characters with a mix of letters, numbers & symbols</p>} */}
+  </div>;
+};
+
+export default TextField;
