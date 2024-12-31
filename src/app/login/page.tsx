@@ -1,4 +1,4 @@
-import FormContainer from "@/components/authentication/FormContainer";
+import FormContainer from "@/components/forms/FormContainer";
 import React from "react";
 
 const LoginPage = () => {

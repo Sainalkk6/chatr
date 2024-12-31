@@ -35,11 +35,10 @@ const TextField = ({ error, handleChange, id, label, name, value,touched,type,is
     );
   };
 
-  return <div className="flex flex-col gap-1  ">
+  return <div className="flex flex-col gap-1 mb-2 relative">
     {renderFieldHeader()}
     <input type={type} onBlur={handleBlur} onChange={handleChange} name={name} id={id} className="md:h-14 h-12 rounded-xl pl-5 border border-[#66666659] outline-none" value={value} />
-    {touched && error && <p className="text-red-500 text-sm">{error}</p>}
-    {/* {isPassword && <p className="text-field-label ">Use 8 or more characters with a mix of letters, numbers & symbols</p>} */}
+    {touched && error && <p className="text-red-500 left-1 -bottom-7 absolute text-sm">{error}</p>}
   </div>;
 };
 
