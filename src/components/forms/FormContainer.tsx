@@ -60,7 +60,6 @@ const FormContainer = ({ buttonLabel, isLogin, subtitle, title, subtitleLink }: 
       return response;
     } catch (err) {
       setError("Inavild Credentials");
-      console.log(err);
     }
   };
 
@@ -71,7 +70,6 @@ const FormContainer = ({ buttonLabel, isLogin, subtitle, title, subtitleLink }: 
         const response = isLogin ? await handleSignIn(values.email, values.password) : await handleSignUp(values.email, values.password, values.username);
         if (response) isLogin ? router.push("/") : router.push("/profile");
       } catch (error) {
-        console.log("something went wrong while submitting the data ", error);
       }
     },
     validationSchema: isLogin ? loginSchema : signupSchema,
@@ -84,7 +82,6 @@ const FormContainer = ({ buttonLabel, isLogin, subtitle, title, subtitleLink }: 
         router.push("/");
       }
     } catch (err) {
-      console.log(err);
     }
   };
 
@@ -164,10 +161,3 @@ const FormContainer = ({ buttonLabel, isLogin, subtitle, title, subtitleLink }: 
 };
 
 export default FormContainer;
-
-// import { updateDoc } from "firebase/firestore";
-
-// await updateDoc(doc(db, "users", user.uid), {
-//   phoneNumber: "+1234567890", // New field
-//   hobbies: ["reading", "coding", "gaming"], // New field
-// });

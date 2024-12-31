@@ -12,17 +12,20 @@ export default {
         'button-primary-text':"#fff",
         'field-label':"#666",
         'default-text-color':"#333",
-        'text-dark':"#111"
+        'text-dark':"#111",
+        'text-response':'#5fb456'
       },
       borderRadius:{
        'button-default-radius':"999px" 
       },
       fontSize:{
-        'button-text-size': '22px'
+        'button-text-size': '22px',
+        'sub-head-size':'24px'
       },
       backgroundColor:{
         'default':"#fff",
         'button-primary':'#111',
+        'new-message':"#3c73fc"
       },
       fontFamily:{
         albert:["var(--font-albert)","sans-serif"]

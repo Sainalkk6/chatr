@@ -4,7 +4,6 @@ import React from 'react'
 
 const Home = () => {
   const {user} = useAuth() ?? {}
-  console.log(user)
   return (
     <div>
       Home

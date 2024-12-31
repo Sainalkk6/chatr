@@ -26,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <AuthProvider>
-        <body className={`${albertSans.variable} ${geistMono.variable} antialiased`}>{children}</body>
+          <body className={`${albertSans.variable} ${geistMono.variable} antialiased`}>{children}</body>
       </AuthProvider>
     </html>
   );
