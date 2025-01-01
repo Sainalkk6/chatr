@@ -25,7 +25,9 @@ export default {
       backgroundColor:{
         'default':"#fff",
         'button-primary':'#111',
-        'new-message':"#3c73fc"
+        'new-message':"#3c73fc",
+        'message-bubble-send' : "#f4f4f4",
+        'message-bubble-received' : "#3C72FC",
       },
       fontFamily:{
         albert:["var(--font-albert)","sans-serif"]
@@ -38,6 +40,9 @@ export default {
     backgroundPosition:{
       'center-left':'right -160px center',
       'centered':'center center'
+    },
+    borderColor:{
+      'default-border-color':"#e1e1e1"
     }
   },
   plugins: [],

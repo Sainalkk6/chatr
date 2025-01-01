@@ -1,31 +1,37 @@
 "use client";
+import Aside from "@/components/ui/Aside";
+import ChatRoom from "@/components/ui/ChatRoom";
 import { AUTH_TOKEN_KEY } from "@/constants";
 import { clearItemFromCookie } from "@/utils/auth";
 import { auth } from "@/utils/firebaseConfig";
-import React from "react";
+import { createContext, useState } from "react";
+
+interface ReceiverContextType {
+  receiverUid: string;
+  setreceiverUid: React.Dispatch<React.SetStateAction<string>>;
+}
+
+export const ReceiverContext = createContext<ReceiverContextType | null>(null);
+
+const handleSignOut = async () => {
+  await auth.signOut();
+  clearItemFromCookie(AUTH_TOKEN_KEY);
+  window.location.reload();
+};
 
 const Home = () => {
-  async function handleLogout() {
-    await auth.signOut();
-    clearItemFromCookie(AUTH_TOKEN_KEY);
-    window.location.reload();
-  }
-
+  const [receiverUid, setreceiverUid] = useState("");
   return (
-    <div>
-      Home
-      <br />
-      <span className="text-xl font-bold">
-        Hello, <span className="text-2xl">{auth.currentUser?.email}</span>
-      </span>
-      <br />
-      <button
-        className="bg-slate-300 px-3 py-2 rounded-md mx-4 my-2 uppercase font-semibold hover:bg-slate-400"
-        onClick={handleLogout}
-      >
-        Logout
-      </button>
-    </div>
+    <ReceiverContext.Provider value={{ receiverUid, setreceiverUid }}>
+      <div className="flex w-full p-5 bg-[#f9f8fd] h-screen gap-5">
+        <Aside />
+        <div className="flex w-full">
+          <ChatRoom/>
+          {/* Todo : Remove this button from here */}
+          {/* <button onClick={handleSignOut}>Logout</button> */}
+        </div>
+      </div>
+    </ReceiverContext.Provider>
   );
 };
 

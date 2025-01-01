@@ -25,7 +25,8 @@ export const PUT = async (req: NextRequest, { params }: any) => {
             firstName: data.firstName,
             lastName: data.lastName,
             phone: data.phone,
-            profileImage:url
+            profileImage:url,
+            userId:data.uid
         })
         return NextResponse.json({message:"User data has been updated successfully"})
     } catch (err) {

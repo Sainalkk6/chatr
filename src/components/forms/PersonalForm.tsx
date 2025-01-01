@@ -41,6 +41,7 @@ const PersonalForm = ({ uid, email }: PersonalForm) => {
             lastName: values.lastName,
             phone: values.phone,
             imageUrl: values.imageUrl,
+            uid
           }),
         }
       );
