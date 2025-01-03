@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Albert_Sans } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/providers/AuthContext";
+import QueryProvider from "@/providers/QueryProvider";
 
 const albertSans = Albert_Sans({
   variable: "--font-albert",
@@ -26,7 +27,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <AuthProvider>
-          <body className={`${albertSans.variable} ${geistMono.variable} antialiased`}>{children}</body>
+        <QueryProvider>
+          <body
+            className={`${albertSans.variable} ${geistMono.variable} antialiased`}
+          >
+            {children}
+          </body>
+        </QueryProvider>
       </AuthProvider>
     </html>
   );

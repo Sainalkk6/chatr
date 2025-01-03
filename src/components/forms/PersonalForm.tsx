@@ -5,6 +5,7 @@ import { useFormik } from "formik";
 import { useRouter } from "next/navigation";
 import Button from "../ui/Button";
 import TextField from "../ui/TextField";
+import { DEFAULT_AVATAR } from "@/constants";
 
 interface PersonalForm {
   uid: string;
@@ -40,7 +41,7 @@ const PersonalForm = ({ uid, email }: PersonalForm) => {
             firstName: values.firstName,
             lastName: values.lastName,
             phone: values.phone,
-            imageUrl: values.imageUrl,
+            imageUrl: values.imageUrl.length ? values.imageUrl : DEFAULT_AVATAR,
           }),
         }
       );

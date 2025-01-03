@@ -1,13 +1,16 @@
 import { AUTH_TOKEN_KEY } from "@/constants";
 import { jwtDecode } from "jwt-decode";
-import { decode } from "punycode";
 
-export const getAuthToken = (): string | null => {
-  if (typeof window !== "undefined") {
-    const token = sessionStorage.getItem(AUTH_TOKEN_KEY);
-    return token;
-  }
-  return null;
+export const getAuthToken = (): string => {
+  const token = decodeURIComponent(document.cookie).split("=");
+
+  let accessToken: string = "";
+
+  if (token[0] === AUTH_TOKEN_KEY) accessToken = token[1];
+
+  console.log(1234234, { accessToken });
+
+  return accessToken;
 };
 
 export const setAuthToken = (token: string) => {

@@ -21,3 +21,7 @@ export type AuthUserType = {
   }[];
   uid: string;
 } | null;
+
+export type JWTCliams = {
+  user_id: string;
+};

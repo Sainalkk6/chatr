@@ -4,31 +4,38 @@ import { doc, updateDoc } from "firebase/firestore";
 import { NextRequest, NextResponse } from "next/server";
 
 export const PUT = async (req: NextRequest, { params }: any) => {
-    const { userId } = await params
-    const data = await req.json()
-    const base64Image = data.imageUrl.split(",")[1]
-    const buffer = Buffer.from(base64Image, "base64")
+  const { userId } = await params;
+  const data = await req.json();
 
-    const file = new File([buffer],"user-profile.jpg",{
-        type: "image/jpeg",
-        lastModified:Date.now()
-    })
+  console.log(13241234, { data });
 
-    const uploadData = await pinata.upload.file(file)
-    const url  = await pinata.gateways.createSignedURL({
-        cid:uploadData.cid,
-        expires:324646734687675
-    })
+  const buffer = Buffer.from(data.imageUrl, "base64");
 
-    try {
-        await updateDoc(doc(db, "users", userId), {
-            firstName: data.firstName,
-            lastName: data.lastName,
-            phone: data.phone,
-            profileImage:url
-        })
-        return NextResponse.json({message:"User data has been updated successfully"})
-    } catch (err) {
-        return NextResponse.json({ message: "Something went wrong while updating the user info", error: err })
-    }
-}
+  const file = new File([buffer], "user-profile.jpg", {
+    type: "image/jpeg",
+    lastModified: Date.now(),
+  });
+
+  const uploadData = await pinata.upload.file(file);
+  const url = await pinata.gateways.createSignedURL({
+    cid: uploadData.cid,
+    expires: 324646734687675,
+  });
+
+  try {
+    await updateDoc(doc(db, "users", userId), {
+      firstName: data.firstName,
+      lastName: data.lastName,
+      phone: data.phone,
+      profileImage: url,
+    });
+    return NextResponse.json({
+      message: "User data has been updated successfully",
+    });
+  } catch (err) {
+    return NextResponse.json({
+      message: "Something went wrong while updating the user info",
+      error: err,
+    });
+  }
+};
