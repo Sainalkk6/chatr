@@ -1,8 +1,6 @@
 "use client";
 import Aside from "@/components/ui/Aside";
 import ChatRoom from "@/components/ui/ChatRoom";
-import { AUTH_TOKEN_KEY } from "@/constants";
-import { clearItemFromCookie } from "@/utils/auth";
 import { auth } from "@/utils/firebaseConfig";
 import { createContext, useState } from "react";
 
@@ -15,8 +13,7 @@ export const ReceiverContext = createContext<ReceiverContextType | null>(null);
 
 const handleSignOut = async () => {
   await auth.signOut();
-  clearItemFromCookie(AUTH_TOKEN_KEY);
-  window.location.reload();
+   window.location.reload();
 };
 
 const Home = () => {
@@ -28,7 +25,7 @@ const Home = () => {
         <div className="flex w-full">
           <ChatRoom/>
           {/* Todo : Remove this button from here */}
-          {/* <button onClick={handleSignOut}>Logout</button> */}
+          <button onClick={handleSignOut}>Logout</button>
         </div>
       </div>
     </ReceiverContext.Provider>
