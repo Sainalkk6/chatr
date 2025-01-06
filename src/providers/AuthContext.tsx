@@ -7,10 +7,8 @@ import {
   onAuthStateChanged,
   signInWithPopup,
   signOut,
-  User,
   UserCredential,
 } from "firebase/auth";
-import { jwtDecode } from "jwt-decode";
 import {
   createContext,
   ReactNode,

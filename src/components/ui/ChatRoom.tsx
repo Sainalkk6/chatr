@@ -1,9 +1,17 @@
 "use client";
 import { ReceiverContext } from "@/app/page";
-import { useContext, useEffect, useState } from "react";
-import Message, { MessageInterface } from "../chat-room/Message";
-import MessageInputContainer from "./MessageInputContainer";
+import { DataQueryKeys } from "@/dataQueryKeys";
 import { useAuth } from "@/providers/AuthContext";
+import { useGetChat } from "@/utils/customHooks/useGetChat";
+import { useSendText } from "@/utils/customHooks/useSendText";
+import { useQueryClient } from "@tanstack/react-query";
+import { useContext, useEffect, useRef, useState } from "react";
+import MessageInputContainer from "./MessageInputContainer";
+import Message from "../chat-room/Message";
+import Loader from "./Loader";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+dayjs.extend(relativeTime);
 
 interface UserInterface {
   username: string;
@@ -11,95 +19,90 @@ interface UserInterface {
   email: string;
 }
 
-const demoData: MessageInterface[] = [
-  {
-    message: "Heyy . its been a while how are you ?",
-    profileImage: "",
-    timeStamp: "12:00PM",
-    username: "Test",
-    userType: "sender",
-  },
-  {
-    message: "Heyy its good to finally hear from you dude ",
-    profileImage: "",
-    timeStamp: "12:10PM",
-    username: "three",
-    userType: "receiver",
-  },
-  {
-    message: "Heyy . its been a while how are you ?",
-    profileImage: "",
-    timeStamp: "12:00PM",
-    username: "Test",
-    userType: "sender",
-  },
-  {
-    message: "Heyy its good to finally hear from you dude ",
-    profileImage: "",
-    timeStamp: "12:10PM",
-    username: "three",
-    userType: "receiver",
-  },
-  {
-    message: "Heyy . its been a while how are you ?",
-    profileImage: "",
-    timeStamp: "12:00PM",
-    username: "Test",
-    userType: "sender",
-  },
-  {
-    message: "Heyy its good to finally hear from you dude ",
-    profileImage: "",
-    timeStamp: "12:10PM",
-    username: "three",
-    userType: "receiver",
-  },
-  {
-    message: "Heyy . its been a while how are you ?",
-    profileImage: "",
-    timeStamp: "12:00PM",
-    username: "Test",
-    userType: "sender",
-  },
-  {
-    message: "Heyy its good to finally hear from you dude ",
-    profileImage: "",
-    timeStamp: "12:10PM",
-    username: "three",
-    userType: "receiver",
-  },
-];
-
 const ChatRoom = () => {
-  const {user:sender} = useAuth() ?? {}
+  const { user } = useAuth() ?? {};
   const context = useContext(ReceiverContext);
-  const [user, setUser] = useState<UserInterface>();
+  const [receiver, setReciever] = useState<UserInterface>();
+  const [sender, setSender] = useState<UserInterface>();
   const [message, setMessage] = useState("");
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  const queryClient = useQueryClient();
+  console.log(user)
 
   if (!context) return;
 
   const { receiverUid } = context;
 
+  if (receiverUid) queryClient.invalidateQueries({ queryKey: [DataQueryKeys.CHAT_ROOM] });
+
+  const { mutate: sendMessage } = useSendText();
+
+  const { data } = useGetChat(user?.uid ?? "", receiverUid);
+
   useEffect(() => {
-    const getUser = async () => {
+    const getReceiver = async () => {
       const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/users/get-user/${receiverUid}`);
       const data = await response.json();
-      setUser(data);
+      setReciever(data);
     };
-    getUser();
+    const getSender = async () => {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/users/get-user/${user?.uid}`);
+      const data = await response.json();
+      setSender(data);
+    };
+    getSender();
+    getReceiver();
   }, [receiverUid]);
+
+  useEffect(() => {
+    const element = containerRef.current;
+    if (element) {
+      element.scrollTop = element.scrollHeight;
+    }
+  }, [data]);
+
+  const handleSendMessage = () => {
+    sendMessage({
+      message: message,
+      senderId: (user && user.uid) ?? "",
+      receiverId: receiverUid,
+    });
+  };
+
+  const renderMessages = () => {
+    if (!data?.messages) {
+      return (
+        <div className="flex items-center relative justify-center w-full">
+          <span className="text-xl font-medium absolute text-center top-[300px]">
+            No messages yet. <br /> Be the first one to say hi !
+          </span>
+        </div>
+      );
+    }
+
+    return data.messages.map((message) => {
+      const isSender = user?.uid === message.senderId;
+      const userType: "sender" | "receiver" = isSender ? "sender" : "receiver";
+      const profile = isSender ? sender?.profileImage : receiver?.profileImage;
+      const username = isSender ? sender?.username : receiver?.username;
+      const formattedTime = dayjs(message.timestamp).format("h:mm:ss A");
+
+      return <Message key={message.timestamp} message={message.message} profileImage={profile!} timeStamp={formattedTime} userType={userType} username={username!} />;
+    });
+  };
 
   const renderUsername = (label: string) => <span className="text-text-dark capitalize text-xl font-medium">{label}</span>;
   const renderUserStatus = (status: string) => <span className="text-text-response font-medium text-lg">{status}</span>;
   const renderUserCard = () => {
-    if (user)
+    if (receiver)
       return (
         <div className="flex w-full p-5 gap-4 justify-between items-center border-b border-b-default-border-color">
           <div className="w-full max-w-[70px] ">
-            <img src={user.profileImage} alt="" className="rounded-full object-cover w-[70px] h-[70px]" />
+            <img src={receiver.profileImage} alt="" className="rounded-full object-cover w-[70px] h-[70px]" />
           </div>
           <div className="flex flex-col justify-center items-start w-full">
-            {renderUsername(user.username)}
+            {renderUsername(receiver.username)}
             {renderUserStatus("typing...")}
           </div>
         </div>
@@ -111,12 +114,10 @@ const ChatRoom = () => {
       {receiverUid && (
         <>
           {renderUserCard()}
-          <div className="flex overflow-auto no-scrollbar flex-1 flex-col">
-            {demoData.map((data) => (
-              <Message message={data.message} profileImage={data.profileImage} timeStamp={data.timeStamp} userType={data.userType} username={data.username} key={data.message} />
-            ))}
+          <div className="flex overflow-auto no-scrollbar flex-1 flex-col" ref={containerRef}>
+            {renderMessages()}
           </div>
-          <MessageInputContainer message={message} setMessage={setMessage} />
+          <MessageInputContainer handleClick={handleSendMessage} message={message} setMessage={setMessage} />
         </>
       )}
     </div>

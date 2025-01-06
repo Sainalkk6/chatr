@@ -3,14 +3,14 @@ export interface MessageInterface {
   message: string;
   profileImage:string;
   username:string;
-  timeStamp:string;
+  timeStamp:any;
 }
 
 const Message = ({ userType,timeStamp, username, profileImage, message }: MessageInterface) => {
   const userDetails = () => {
     return (
       <div className={`flex ${userType === "sender" ? "flex-row" : "flex-row-reverse"} flex items-center gap-6`}>
-        <img src={profileImage} alt="user-avatar" className="rounded-full w-[50px] h-[50px]" />
+        <img src={profileImage} alt="user-avatar" className="rounded-full w-[50px] h-[50px] object-cover" />
         <div className="flex items-center gap-4">
           <span className="text-text-dark text-2xl font-medium">{username}</span>
           <div className="w-1 h-1 bg-black" />
@@ -23,8 +23,8 @@ const Message = ({ userType,timeStamp, username, profileImage, message }: Messag
   const renderMessage = () => {
     return (
       <div className={`flex pr-16 flex-col justify-center ${userType === "sender" ? "items-start" : "items-end"} gap-1`}>
-        <div className={`${userType === "sender" ? "bg-message-bubble-send text-text-dark" : "bg-message-bubble-received text-white"} flex w-fit p-6 items-center justify-center rounded-3xl border border-default-border-color `}>
-          <p className=" text-xl font-medium">{message}</p>
+        <div className={`${userType === "sender" ? "bg-message-bubble-send text-text-dark" : "bg-message-bubble-received text-white"} flex w-fit p-4 min-w-24 items-center justify-center rounded-3xl border border-default-border-color `}>
+          <p className=" text-xl break-words max-w-[470px] font-medium">{message}</p>
         </div>
       </div>
     );
