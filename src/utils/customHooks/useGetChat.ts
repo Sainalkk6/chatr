@@ -14,11 +14,12 @@ interface ChatroomResponseInterface {
 
 export const useGetChat = (senderId: string, receiverId: string) => {
     return useQuery({
-        queryKey: [DataQueryKeys.CHAT_ROOM],
+        queryKey: [DataQueryKeys.CHAT_ROOM,receiverId],
         queryFn: async () => {
             const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/chat/get-chats?senderId=${senderId}&receiverId=${receiverId}`)
             const data:ChatroomResponseInterface = await response.json()
             return data
         },
+          
     })
 }

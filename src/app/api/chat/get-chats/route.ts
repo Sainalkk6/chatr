@@ -13,8 +13,7 @@ export const GET = async (req: NextRequest) => {
             participants: {
                 $all: [senderId, receiverId]
             }
-        }
-        )
+        })
         return NextResponse.json(chatRoom)
     } catch (error) {
         return NextResponse.json({ message: "Something went wrong while fetching the user", error })

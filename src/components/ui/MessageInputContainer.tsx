@@ -10,7 +10,7 @@ interface MessageInputContainerInterface {
 const MessageInputContainer = ({ message, handleClick, setMessage }: MessageInputContainerInterface) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setMessage(e.target.value);
   const disabled = message.length > 0
-
+  
   return (
     <div className="flex w-full gap-2 items-center p-4 rounded-3xl">
       <input type="text" onChange={handleChange} value={message} placeholder="Type a message..." className="py-1 px-5 h-16 items-center w-full  rounded-full border border-[#bcbcbc] outline-none text-text-dark font-medium text-xl" />

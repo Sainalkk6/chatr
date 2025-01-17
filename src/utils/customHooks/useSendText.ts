@@ -2,7 +2,7 @@ import { DataQueryKeys } from "@/dataQueryKeys"
 import { MessageInterface } from "@/types/message"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
-export const useSendText = ()=>{
+export const useSendText = (receiverId:string)=>{
     const queryClient = useQueryClient()
     return useMutation({
         mutationFn: async (data:MessageInterface) => {

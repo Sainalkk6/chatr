@@ -24,7 +24,6 @@ const ProfileStrip = ({ imageUrl, isOnline, username }: ProfileStripInterface) =
       setStatus(doc.data());
     });
     console.log({status})
-
     return () => unsubscribe();
   }, [user]);
 
