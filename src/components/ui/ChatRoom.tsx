@@ -20,17 +20,25 @@ interface UserInterface {
   email: string;
 }
 
+type MessageType = {
+  senderId: string;
+  receiverId: string;
+  timestamp: string | number;
+  message: string;
+}
+
 const ChatRoom = () => {
   const { user } = useAuth() ?? {};
   const context = useContext(ReceiverContext);
   const [receiver, setReciever] = useState<UserInterface>();
   const [sender, setSender] = useState<UserInterface>();
   const [message, setMessage] = useState("");
+  const [messages,setMessages] = useState<MessageType[]>([] as MessageType[])
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const {ably, channel} = useChannel("chatR")
   const queryClient = useQueryClient();
-  console.log(user)
+  console.log(ably)
 
   if (!context) return;
 
@@ -41,6 +49,10 @@ const ChatRoom = () => {
   const { mutate: sendMessage } = useSendText(receiverUid);
 
   const { data } = useGetChat(user?.uid ?? "", receiverUid);
+
+  useEffect(()=>{
+    if(data?.messages) setMessages(data.messages)
+  },[data,ably])
 
   useEffect(() => {
     const getReceiver = async () => {
@@ -62,21 +74,44 @@ const ChatRoom = () => {
     if (element) {
       element.scrollTop = element.scrollHeight;
     }
-  }, [data]);
+  }, [data,ably,messages]);
 
   const handleSendMessage = () => {
     channel.publish({name:"chatR",data:message})
-    sendMessage({
-      message: message,
-      senderId: (user && user.uid) ?? "",
-      receiverId: receiverUid,
-    });
+    const newMessage = {message, senderId:(user && user.uid) ?? "", receiverId:receiverUid};
+    setMessages(prev=> [...prev,{...newMessage,timestamp:Date.now()}])
+    sendMessage(newMessage);
   };
+
+  useEffect(() => {
+    if (channel) {
+      const listener = (message: any) => {
+        // Update messages when new messages are received
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          {
+            message: message.data,
+            senderId: message.senderId,
+            receiverId: message.receiverId,
+            timestamp: Date.now(),
+          },
+        ]);
+      };
+  
+      // Subscribe to 'chatR' channel
+      channel.subscribe("chatR", listener);
+  
+      // Cleanup: unsubscribe from the channel when the component is unmounted
+      return () => {
+        channel.unsubscribe("chatR", listener);
+      };
+    }
+  }, [channel]);
 
   const renderMessages = () => {
     if (!data?.messages) {
       return (
-        <div className="flex items-center relative justify-center w-full">
+        <div className="flex items-center relative justify-center w-full" ref={containerRef}>
           <span className="text-xl font-medium absolute text-center top-[300px]">
             No messages yet. <br /> Be the first one to say hi !
           </span>
@@ -84,7 +119,7 @@ const ChatRoom = () => {
       );
     }
 
-    return data.messages.map((message) => {
+    return messages.map((message) => {
       const isSender = user?.uid === message.senderId;
       const userType: "sender" | "receiver" = isSender ? "sender" : "receiver";
       const profile = isSender ? sender?.profileImage : receiver?.profileImage;
@@ -117,7 +152,7 @@ const ChatRoom = () => {
       {receiverUid && (
         <>
           {renderUserCard()}
-          <div className="flex overflow-auto no-scrollbar flex-1 flex-col" ref={containerRef}>
+          <div className="flex overflow-auto no-scrollbar flex-1 flex-col">
             {renderMessages()}
           </div>
           <MessageInputContainer handleClick={handleSendMessage} message={message} setMessage={setMessage} />
