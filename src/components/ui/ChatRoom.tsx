@@ -11,6 +11,7 @@ import Message from "../chat-room/Message";
 import Loader from "./Loader";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { ChannelProvider, useChannel } from "ably/react";
 dayjs.extend(relativeTime);
 
 interface UserInterface {
@@ -27,6 +28,7 @@ const ChatRoom = () => {
   const [message, setMessage] = useState("");
   const containerRef = useRef<HTMLDivElement | null>(null);
 
+  const {ably, channel} = useChannel("chatR")
   const queryClient = useQueryClient();
   console.log(user)
 
@@ -36,7 +38,7 @@ const ChatRoom = () => {
 
   if (receiverUid) queryClient.invalidateQueries({ queryKey: [DataQueryKeys.CHAT_ROOM] });
 
-  const { mutate: sendMessage } = useSendText();
+  const { mutate: sendMessage } = useSendText(receiverUid);
 
   const { data } = useGetChat(user?.uid ?? "", receiverUid);
 
@@ -63,6 +65,7 @@ const ChatRoom = () => {
   }, [data]);
 
   const handleSendMessage = () => {
+    channel.publish({name:"chatR",data:message})
     sendMessage({
       message: message,
       senderId: (user && user.uid) ?? "",

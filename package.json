@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.62.14",
+    "ably": "^2.6.2",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.13",
     "firebase": "^11.1.0",
